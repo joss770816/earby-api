@@ -51,19 +51,19 @@
       "respuestas_sugeridas": [
         {
           "tono": "formal",
-          "texto": "Aceptamos su cancelación sin costo. Se ha anulado la reserva. Le esperamos en otra ocasión."
+          "texto": "Aceptamos su cancelación sin costo. Siempre y cuando sea con 24hrs de antelacion."
         },
         {
           "tono": "amigable",
-          "texto": "¡Cancelación hecha! Sin penalización. Ojalá nos visites pronto, Palenque te espera. 🌿"
+          "texto": "¡Aceptamos Cancelación! Sin penalización. por favor solicitela con 24hrs de antelación, Palenque te espera. 🌿"
         },
         {
           "tono": "tecnico",
-          "texto": "Cancelación confirmada. Política: sin cargos por cancelación anticipada."
+          "texto": "Nuestra politica de Cancelación. Es sin cargos por cancelación anticipada."
         },
         {
           "tono": "urgente",
-          "texto": "CANCELACIÓN PROCESADA. Recibirá confirmación por WhatsApp en 5 min."
+          "texto": "CANCELACIÓN. Recibirá confirmación por WhatsApp en 5 min."
         }
       ]
     }
@@ -16233,6 +16233,76 @@
         {
           "tono": "urgente",
           "texto": "¡CLARO! ¡Claro! Todo impecable. Ropa de cama limpia y colcha incluida. 🛏️ ¡Qué tal!!"
+        }
+      ]
+    }
+  },
+  {
+    "input": "factura facturar cfdi rfc facturacion",
+    "output": {
+      "respuestas_sugeridas": [
+        {
+          "tono": "formal",
+          "texto": "Sí, facturamos con RFC y uso de CFDI. Solicítala en recepción antes del check-out."
+        },
+        {
+          "tono": "amigable",
+          "texto": "📄 ¡Claro! Sí, facturamos con RFC y uso de CFDI. Solicítala en recepción antes del check-out."
+        }
+      ]
+    }
+  },
+  {
+    "input": "clima aire ac acondicionado fresquito calor",
+    "output": {
+      "respuestas_sugeridas": [
+        {
+          "tono": "amigable",
+          "texto": "❄️ ¡Claro que sí! Clima y A/C son lo mismo. Todas las habitaciones tienen aire acondicionado individual. ¡No inventes, está bien fresco!"
+        }
+      ]
+    }
+  },
+  {
+    "input": "wifi internet conexion",
+    "output": {
+      "respuestas_sugeridas": [
+        {
+          "tono": "amigable",
+          "texto": "📡 Wi-Fi de alta velocidad gratis en TODAS las habitaciones."
+        }
+      ]
+    }
+  },
+  {
+    "input": "estacionamiento parking cochera",
+    "output": {
+      "respuestas_sugeridas": [
+        {
+          "tono": "amigable",
+          "texto": "🅿️ Estacionamiento gratuito en vía pública (privado bajo solicitud)."
+        }
+      ]
+    }
+  },
+  {
+    "input": "cancelar cancelacion reembolso",
+    "output": {
+      "respuestas_sugeridas": [
+        {
+          "tono": "amigable",
+          "texto": "✅ Cancelación GRATIS con 24 horas de anticipación. Sin penalización."
+        }
+      ]
+    }
+  },
+  {
+    "input": "ubicacion direccion donde estacion tren maya",
+    "output": {
+      "respuestas_sugeridas": [
+        {
+          "tono": "amigable",
+          "texto": "📍 A 600 metros de la estación del Tren Maya en Palenque, Chiapas."
         }
       ]
     }
