@@ -80,8 +80,8 @@ respuestas_predefinidas = {
     # Fumar
     "fumar": "🚭 No se permite fumar dentro de las habitaciones. Puedes fumar en la terraza o áreas exteriores.",
     
-    # Microondas / Cocinar
-    "microondas": "🔥 No tenemos estufa, pero ¡sí! Tenemos microondas disponible en recepción para calentar tus alimentos.",
+    # Microhondas / Cocinar
+    "microhondas": "🔥 No tenemos estufa, pero ¡sí! Tenemos microhondas disponible en recepción para calentar tus alimentos.",
     
     # Toallas
     "toallas": "🧺 Toallas de baño y manos incluidas. Puedes pedir extras en recepción sin costo.",
@@ -124,7 +124,7 @@ def buscar_respuesta(mensaje):
         "alberca": ["alberca", "piscina", "jacuzzi", "pileta"],
         "baño": ["wc", "regadera", "espejo", "tocador", "sanitario", "ducha"],
         "fumar": ["fumar", "cigarro", "tabaco", "vape", "cigarrillo"],
-        "microondas": ["microondas", "cocinar", "calentar", "estufa"],
+        "microhondas": ["microondas", "cocinar", "calentar", "estufa"],
         "toallas": ["toalla", "toallas"],
         "agua": ["agua caliente", "agua fría", "boiler"],
         "tv": ["tv", "televisión", "canales", "cable"],
