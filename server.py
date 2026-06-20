@@ -23,14 +23,12 @@ except Exception as e:
 def normalizar_texto(texto):
     """Elimina tildes, signos, y normaliza para comparación"""
     texto = texto.lower()
-    # Reemplazar tildes
     texto = re.sub(r'á', 'a', texto)
     texto = re.sub(r'é', 'e', texto)
     texto = re.sub(r'í', 'i', texto)
     texto = re.sub(r'ó', 'o', texto)
     texto = re.sub(r'ú', 'u', texto)
     texto = re.sub(r'ñ', 'n', texto)
-    # Eliminar signos de puntuación
     texto = re.sub(r'[^a-z0-9\s]', '', texto)
     return texto
 
@@ -39,8 +37,8 @@ def calcular_similitud(mensaje, input_ejemplo):
     palabras_mensaje = set(normalizar_texto(mensaje).split())
     palabras_ejemplo = set(normalizar_texto(input_ejemplo).split())
     
-    # Excluir palabras muy cortas
-    palabras_mensaje = {p for p in palabras_mensaje if len(p) >= 3}
+    # Excluir palabras muy cortas (menos de 3 letras)
+    palabras_mensaje = {p for p in palabras_mensaje if len(p) >= 2}
     
     if not palabras_mensaje:
         return 0
@@ -48,23 +46,25 @@ def calcular_similitud(mensaje, input_ejemplo):
     coincidencias = len(palabras_mensaje & palabras_ejemplo)
     total_mensaje = len(palabras_mensaje)
     
-    # Porcentaje de coincidencia
+    # Si el mensaje tiene 1 palabra y coincide, devuelve 1.0
     return coincidencias / total_mensaje if total_mensaje > 0 else 0
 
 # ========== FUNCIÓN DE BÚSQUEDA MEJORADA ==========
 def buscar_respuesta(mensaje):
-    mensaje_original = mensaje
     mensaje = mensaje.lower().strip()
     
     # ===== 1. PRIMERO: BUSCAR EN EL FEW-SHOT =====
     mejor_match = None
     mejor_score = 0
-    UMBRAL_MINIMO = 0.3  # 30% de coincidencia
+    UMBRAL_MINIMO = 0.1  # BAJAMOS EL UMBRAL A 10% PARA PRUEBAS
     
     if entrenamiento:
         for ejemplo in entrenamiento:
             input_text = ejemplo.get('input', '')
             score = calcular_similitud(mensaje, input_text)
+            
+            # DEBUG: Mostrar lo que está pasando
+            print(f"🔍 Comparando: '{mensaje}' vs '{input_text}' -> Score: {score:.2f}")
             
             if score > mejor_score:
                 mejor_score = score
@@ -72,6 +72,7 @@ def buscar_respuesta(mensaje):
         
         # Si encontramos un buen match
         if mejor_match and mejor_score >= UMBRAL_MINIMO:
+            print(f"✅ MATCH ENCONTRADO! Score: {mejor_score:.2f}")
             respuestas = mejor_match.get('output', {}).get('respuestas_sugeridas', [])
             
             # Seleccionar el tono según la intención del usuario
@@ -90,50 +91,9 @@ def buscar_respuesta(mensaje):
             if respuestas:
                 return respuestas[0].get('texto')
     
-    # ===== 2. SI NO HAY MATCH, USAR SALUDOS Y NÚMEROS =====
-    # (Solo lo esencial, sin reglas largas que pisen el JSON)
-    
-    # Saludos
-    if mensaje in ['hola', 'buenas', 'hola earby', 'hey', 'saludos', 'buen día', 'buenas tardes', 'buenas noches']:
-        return "🏨 ¡Hola! Soy Earby, tu asistente del Hotel Rosvel. ¿En qué puedo ayudarte? Pregúntame por precios, tipos de habitación (sencilla/doble/triple/familiar) o disponibilidad."
-    
-    # Números sueltos (para respuestas rápidas)
-    if mensaje in ["1"]:
-        return "🏠 Habitación Sencilla: $680 MXN por noche para 1 persona. Incluye A/C, Wi-Fi, baño privado y TV. ¿Necesitas reservar?"
-    if mensaje in ["2"]:
-        return "❤️ Habitación Doble: $850 MXN por noche para 2 personas. Cama matrimonial, A/C, Wi-Fi y estacionamiento. ¿Te ayudo a reservar?"
-    if mensaje in ["3"]:
-        return "👨‍👩‍👧 Habitación Triple: $980 MXN por noche para 3 personas. 1 cama matrimonial + 1 individual, A/C, Wi-Fi."
-    if mensaje in ["4"]:
-        return "👨‍👩‍👧‍👦 Habitación Familiar: $1,200 MXN por noche para 4 personas. 2 camas matrimoniales, 28m², A/C, Wi-Fi."
+    # ===== 2. SI NO HAY MATCH, USAR SALUDOS =====
+    if mensaje in ['hola', 'buenas', 'hola earby', 'hey', 'saludos']:
+        return "🏨 ¡Hola! Soy Earby, tu asistente del Hotel Rosvel. ¿En qué puedo ayudarte?"
     
     # ===== 3. SI NADA FUNCIONA =====
-    return "🤔 No entendí tu consulta. Puedo ayudarte con:\n• Precios: escribe 1,2,3,4\n• Servicios: wifi, estacionamiento, cancelación\n• Ubicación, descuentos, horarios\n• Amenidades: jabón, shampoo, toallas\n• Contacto: WhatsApp +52 938 183 4220\n\n¿Qué necesitas saber?"
-
-# ========== RUTAS DE LA API ==========
-@app.route('/api/chat', methods=['POST'])
-def chat():
-    try:
-        data = request.json
-        mensaje = data.get('mensaje', '')
-        respuesta = buscar_respuesta(mensaje)
-        print(f"📝 Pregunta: {mensaje[:50]}...")
-        return jsonify({'respuesta': respuesta})
-    except Exception as e:
-        print(f"❌ Error: {e}")
-        return jsonify({'respuesta': f'Error: {str(e)}'})
-
-@app.route('/')
-def home():
-    return jsonify({
-        'status': 'Earby API funcionando',
-        'ejemplos': len(entrenamiento),
-        'modelo': 'Few-Shot mejorado con umbral'
-    })
-
-if __name__ == '__main__':
-    print("=" * 50)
-    print("🚀 Earby API - Hotel Rosvel (Con Few-Shot Mejorado)")
-    print(f"📊 Entrenamiento: {len(entrenamiento)} ejemplos")
-    print("=" * 50)
-    app.run(host='0.0.0.0', port=10000, debug=False)
+    return "🤔 No entendí tu consulta. ¿Puedes ser más específico? (precios, servicios, ubicación, etc.)"
