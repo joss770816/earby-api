@@ -19,7 +19,7 @@ except Exception as e:
     print(f"❌ Error al cargar: {e}")
     entrenamiento = []
 
-# ========== RESPUESTAS PREDEFINIDAS COMPLETAS (DEL ORIGINAL) ==========
+# ========== RESPUESTAS PREDEFINIDAS COMPLETAS ==========
 respuestas_predefinidas = {
     # Saludos
     "saludo": "🏨 ¡Hola! Soy Earby, tu asistente del Hotel Rosvel. ¿En qué puedo ayudarte? Pregúntame por precios, tipos de habitación (sencilla/doble/triple/familiar) o disponibilidad.",
@@ -74,7 +74,7 @@ respuestas_predefinidas = {
     # Alberca
     "alberca": "🌊 Puff, ya no tenemos alberca. ¡Pero! Palenque tiene 18 cascadas bien chidas para nadar. ¿Te gustan las cascadas?",
     
-    # Baño
+    # WC, regadera, espejo, tocador
     "baño": "🚽 Todas nuestras habitaciones tienen baño privado completo: WC, regadera con agua caliente, espejo y tocador amplio.",
     
     # Fumar
@@ -103,17 +103,15 @@ def buscar_respuesta(mensaje):
     mensaje_original = mensaje
     mensaje = mensaje.lower().strip()
     
-    # ========== 1. REGLAS DURAS (DEL ORIGINAL) ==========
-    
-    # 1.1 Saludos
+    # 1. Saludos
     if mensaje in ['hola', 'buenas', 'hola earby', 'hey', 'saludos', 'buen día', 'buenas tardes', 'buenas noches']:
         return respuestas_predefinidas["saludo"]
     
-    # 1.2 Números sueltos
+    # 2. Números sueltos
     if mensaje in ["1", "2", "3", "4"]:
         return respuestas_predefinidas[mensaje]
     
-    # 1.3 Palabras clave directas
+    # 3. Palabras clave directas
     clave_respuesta = {
         "clima": ["clima", "aire", "ac", "aire acondicionado", "fresco", "calor"],
         "amenidades": ["jabón", "shampoo", "rastrillo", "navaja", "papel", "wc", "sanitario"],
@@ -131,16 +129,7 @@ def buscar_respuesta(mensaje):
         "agua": ["agua caliente", "agua fría", "boiler"],
         "tv": ["tv", "televisión", "canales", "cable"],
         "tours": ["tour", "tours", "cascadas", "ruinas", "excursión"],
-        "factura": ["factura", "facturar", "cfdi", "rfc"],
-        "precio": ["precio", "costo", "plan", "tarifa"],
-        "ubicación": ["ubicación", "dirección", "donde", "estación", "tren maya"],
-        "estacionamiento": ["estacionamiento", "parking", "cochera"],
-        "wifi": ["wifi", "internet", "conexión"],
-        "descuento": ["descuento", "código", "off", "promoción"],
-        "whatsapp": ["whatsapp", "whats", "wp", "contacto"],
-        "horario": ["horario", "check-in", "check-out", "llegada", "salida"],
-        "mascotas": ["mascotas", "perro", "gato", "animal"],
-        "cancelar": ["cancelar", "cancelación", "reembolso"]
+        "factura": ["factura", "facturar", "cfdi", "rfc"]
     }
     
     for clave, palabras in clave_respuesta.items():
@@ -148,7 +137,7 @@ def buscar_respuesta(mensaje):
             if palabra in mensaje:
                 return respuestas_predefinidas.get(clave, respuestas_predefinidas["saludo"])
     
-    # 1.4 Detectar números dentro de frases
+    # 4. Detectar números dentro de frases
     if re.search(r'\b1\b|\buno\b|una persona|individual|solo', mensaje):
         return respuestas_predefinidas["1"]
     if re.search(r'\b2\b|\bdos\b|pareja|matrimonial|esposa|esposo', mensaje):
@@ -158,38 +147,36 @@ def buscar_respuesta(mensaje):
     if re.search(r'\b4\b|\bcuatro\b|familiar|familia|grupo', mensaje):
         return respuestas_predefinidas["4"]
     
-    # ========== 2. BUSCAR EN EL JSON (SOLO SI NO HAY REGLA) ==========
-    mejor_match = None
-    max_coincidencias = 0
-    
-    palabras_pregunta = re.findall(r'[a-záéíóúñ]+', mensaje)
-    palabras_clave = [p for p in palabras_pregunta if len(p) > 2 and p not in ['que', 'del', 'para', 'una', 'las', 'los']]
-    
-    if palabras_clave:
+    # 5. Buscar en el entrenamiento JSON
+    if entrenamiento:
+        mejor_match = None
+        max_coincidencias = 0
+        
         for ejemplo in entrenamiento:
             input_text = ejemplo.get('input', '').lower()
+            palabras_mensaje = re.findall(r'[a-záéíóúñ]+', mensaje)
             coincidencias = 0
-            for palabra in palabras_clave:
-                if palabra in input_text:
+            
+            for palabra in palabras_mensaje:
+                if len(palabra) >= 3 and palabra in input_text:
                     coincidencias += 1
             
-            if coincidencias > max_coincidencias:
+            if coincidencias > max_coincidencias and coincidencias >= 1:
                 max_coincidencias = coincidencias
                 mejor_match = ejemplo
+        
+        if mejor_match:
+            respuestas = mejor_match.get('output', {}).get('respuestas_sugeridas', [])
+            for r in respuestas:
+                if r.get('tono') == 'amigable':
+                    return r.get('texto')
+            if respuestas:
+                return respuestas[0].get('texto')
     
-    if mejor_match and max_coincidencias >= 1:
-        respuestas = mejor_match.get('output', {}).get('respuestas_sugeridas', [])
-        for r in respuestas:
-            if r.get('tono') == 'amigable':
-                return r.get('texto')
-        if respuestas:
-            return respuestas[0].get('texto')
-    
-    # ========== 3. SI NADA FUNCIONA ==========
+    # 6. Si nada funciona
     return "🤔 No entendí tu consulta. Puedo ayudarte con:\n• Precios: escribe 1,2,3,4\n• Servicios: wifi, estacionamiento, cancelación\n• Ubicación, descuentos, horarios\n• Amenidades: jabón, shampoo, toallas\n• Contacto: WhatsApp +52 938 183 4220\n\n¿Qué necesitas saber?"
 
-# ========== RUTAS DE LA API ==========
-@app.route('/api/chat', methods=['POST'])
+@app.route('/chat', methods=['POST'])
 def chat():
     try:
         data = request.json
@@ -203,15 +190,11 @@ def chat():
 
 @app.route('/')
 def home():
-    return jsonify({
-        'status': 'Earby API funcionando',
-        'ejemplos': len(entrenamiento),
-        'modelo': 'Reglas + Entrenamiento'
-    })
+    return jsonify({'status': 'Earby API funcionando', 'ejemplos': len(entrenamiento)})
 
 if __name__ == '__main__':
     print("=" * 50)
-    print("🚀 Earby API - Hotel Rosvel (Híbrido: Reglas + JSON)")
+    print("🚀 Earby API - Hotel Rosvel")
     print(f"📊 Entrenamiento: {len(entrenamiento)} ejemplos")
     print("=" * 50)
-    app.run(host='0.0.0.0', port=10000, debug=False)
+    app.run(host='0.0.0.0', port=10000)
