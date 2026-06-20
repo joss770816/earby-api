@@ -51,15 +51,16 @@
       "respuestas_sugeridas": [
         {
           "tono": "formal",
-          "texto": "Aceptamos su cancelación sin costo. Se ha anulado la reserva. Le esperamos en otra ocasión."
+          "texto": "Aceptamos su cancelación sin costo. Siempre y cuando la realice con 24hrs de antelacion."
         },
         {
           "tono": "amigable",
-          "texto": "¡Cancelación hecha! Sin penalización. Ojalá nos visites pronto, Palenque te espera. 🌿"
+          "texto": "¡Claro! con todo gusto levantamos el tiket del solicitud, en un momento uno de mis compañeros se pondra en contacto con usted.
+        . 🌿"
         },
         {
           "tono": "tecnico",
-          "texto": "Cancelación confirmada. Política: sin cargos por cancelación anticipada."
+          "texto": "Cancelación en Proceso. la Política es: sin cargos por cancelación con 24hrs de antelación."
         },
         {
           "tono": "urgente",
