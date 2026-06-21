@@ -7,7 +7,7 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# ========== CARGAR EL JSON (SÚPER DIRECTO Y LIGERO) ==========
+# ========== CARGAR EL JSON ==========
 json_path = os.path.join(os.path.dirname(__file__), 'entrenamiento.json')
 print(f"📂 Buscando archivo en: {json_path}")
 
@@ -19,18 +19,20 @@ except Exception as e:
     print(f"❌ Error al cargar JSON: {e}")
     entrenamiento = []
 
-# ========== RESPUESTAS HARDCODEADAS EN MEMORIA POR SEGURIDAD ==========
+# ========== RESPUESTAS DE RESPALDO (FALLBACKS) ==========
 respuestas_predefinidas = {
     "saludo": "🏨 ¡Hola! Soy Earby, tu asistente del Hotel Rosvel. ¿En qué puedo ayudarte? Pregúntame por precios, tipos de habitación (sencilla/doble/triple/familiar) o disponibilidad.",
-    "1": "🏠 Habitación Sencilla: $680 MXN por noche para 1 persona. Incluye A/C, Wi-Fi, baño privado y TV. ¿Necesitas reservar?",
-    "2": "❤️ Habitación Doble: $850 MXN por noche para 2 personas. Cama matrimonial, A/C, Wi-Fi y estacionamiento. ¿Te ayudo a reservar?",
-    "3": "👨‍👩‍👧 Habitación Triple: $980 MXN por noche para 3 personas. 1 cama matrimonial + 1 individual, A/C, Wi-Fi.",
-    "4": "👨‍👩‍👧‍👦 Habitación Familiar: $1,200 MXN por noche para 4 personas. 2 camas matrimoniales, 28m², A/C, Wi-Fi."
+    "menu": "🤔 No entendí del todo. Puedo ayudarte con:\n• Precios de habitaciones (Sencilla, Doble, Triple, Familiar)\n• Servicios (Wifi, A/C, Parqueadero, Facturación)\n• Ubicación y atractivos de Palenque.\n\n¿De cuál te gustaría recibir información?"
+}
+
+# Palabras comunes que no aportan significado y causaban falsos positivos
+PALABRAS_BASURA = {
+    'para', 'una', 'uno', 'unos', 'unas', 'de', 'del', 'la', 'el', 'los', 'las', 
+    'un', 'con', 'en', 'por', 'que', 'me', 'mi', 'su', 'y', 'o', 'a', 'al', '¿', '?'
 }
 
 # ========== NORMALIZACIÓN REFORZADA ==========
 def normalizar_texto(texto):
-    """Elimina tildes, signos, y normaliza para comparación limpia"""
     if not texto:
         return ""
     texto = texto.lower().strip()
@@ -43,42 +45,59 @@ def normalizar_texto(texto):
     texto = re.sub(r'[^a-z0-9\s]', '', texto)
     return texto
 
-# ========== FUNCIÓN DE BÚSQUEDA POR PALABRAS CLAVE ==========
+# ========== FUNCIÓN DE BÚSQUEDA INTELIGENTE CON SCORING ==========
 def buscar_respuesta(mensaje):
     mensaje_normalizado = normalizar_texto(mensaje)
-    palabras_usuario = mensaje_normalizado.split()
+    palabras_usuario = [p for p in mensaje_normalizado.split() if p not in PALABRAS_BASURA]
     
+    # Si el usuario solo envía un número suelto (Menú rápido de marcación)
+    if mensaje_normalizado == "1" or (len(palabras_usuario) == 1 and palabras_usuario[0] == "1"):
+        return "🏠 Habitación Sencilla: $680 MXN por noche para 1 persona. Incluye A/C, Wi-Fi, baño privado y TV. ¿Necesitas reservar?"
+    if mensaje_normalizado == "2" or (len(palabras_usuario) == 1 and palabras_usuario[0] == "2"):
+        return "❤️ Habitación Doble: $850 MXN por noche para 2 personas. Cama matrimonial, A/C, Wi-Fi y estacionamiento. ¿Te ayudo a reservar?"
+    if mensaje_normalizado == "3" or (len(palabras_usuario) == 1 and palabras_usuario[0] == "3"):
+        return "👨‍👩‍👧 Habitación Triple: $980 MXN por noche para 3 personas. 1 cama matrimonial + 1 individual, A/C, Wi-Fi. ¿Te interesa?"
+    if mensaje_normalizado == "4" or (len(palabras_usuario) == 1 and palabras_usuario[0] == "4"):
+        return "👨‍👩‍👧‍👦 Habitación Familiar: $1,200 MXN por noche para 4 personas. 2 camas matrimoniales, A/C, Wi-Fi."
+
+    # Si está vacío, le mandamos el saludo cordial
     if not palabras_usuario:
         return respuestas_predefinidas["saludo"]
 
-    # ===== 1. MÁXIMA PRIORIDAD: ESCANEAR EL JSON SIN .GET() COMPLEJOS =====
-    if entrenamiento:
-        for ejemplo in entrenamiento:
-            # Separamos en palabras clave el "input" del JSON
-            keywords_json = set(normalizar_texto(ejemplo.get('input', '')).split())
-            
-            # Si el usuario escribe una palabra exacta del JSON de más de 2 letras, disparamos
-            for palabra in palabras_usuario:
-                if palabra in keywords_json and len(palabra) >= 2:
-                    # Retornamos el string directo que guardamos con el script limpiador
-                    return ejemplo.get('output', respuestas_predefinidas["saludo"])
-
-    # ===== 2. SEGUNDA PRIORIDAD: SALUDOS EXACTOS =====
+    # Saludos directos rápidos
     if mensaje_normalizado in ['hola', 'buenas', 'hola earby', 'hey', 'saludos', 'buen dia', 'buenas tardes', 'buenas noches']:
         return respuestas_predefinidas["saludo"]
-    
-    # Números del menú de marcación rápida
-    if mensaje_normalizado == "1":
-        return respuestas_predefinidas["1"]
-    if mensaje_normalizado == "2":
-        return respuestas_predefinidas["2"]
-    if mensaje_normalizado == "3":
-        return respuestas_predefinidas["3"]
-    if mensaje_normalizado == "4":
-        return respuestas_predefinidas["4"]
-    
+
+    mejor_respuesta = None
+    max_coincidencias = 0
+
+    # ===== SISTEMA DE PUNTUACIÓN (SCORING) =====
+    if entrenamiento:
+        for ejemplo in entrenamiento:
+            input_json_norm = normalizar_texto(ejemplo.get('input', ''))
+            keywords_json = set([p for p in input_json_norm.split() if p not in PALABRAS_BASURA])
+            
+            # Contamos cuántas palabras importantes del usuario cruzan con este renglón del JSON
+            coincidencias = 0
+            for palabra in palabras_usuario:
+                if palabra in keywords_json and len(palabra) >= 2:
+                    coincidencias += 1
+                    # Súper bonus: Si el cliente busca una categoría específica (ej. "doble", "triple", "familiar", "toallas") 
+                    # y este renglón contiene exactamente esa palabra clave, le subimos la puntuación para evitar desvíos.
+                    if palabra in ['sencilla', 'doble', 'triple', 'familiar', 'toallas', 'cafe', 'estacionamiento', 'alberca', 'factura']:
+                        coincidencias += 2
+
+            # Si este ejemplo supera al anterior campeón de puntos, se vuelve la mejor respuesta
+            if coincidencias > max_coincidencias:
+                max_coincidencias = coincidencias
+                mejor_respuesta = ejemplo.get('output')
+
+    # Si encontramos una respuesta con buena puntuación (al menos 1 match real de palabra importante)
+    if max_coincidencias > 0 and mejor_respuesta:
+        return mejor_respuesta
+
     # ===== 3. RESPUESTA POR DEFECTO (FALLBACK) =====
-    return respuestas_predefinidas["saludo"]
+    return respuestas_predefinidas["menu"]
 
 # ========== RUTAS DE LA API (DOBLE PROTECCIÓN) ==========
 @app.route('/api/chat', methods=['POST', 'OPTIONS'])
@@ -91,14 +110,14 @@ def chat():
         print(f"📝 Consulta: {mensaje[:30]} -> Respuesta: {respuesta[:30]}...")
         return jsonify({'respuesta': respuesta})
     except Exception as e:
-        print(f"❌ Error crítico en ruta chat: {e}")
-        return jsonify({'respuesta': f'Error interno en el servidor: {str(e)}'})
+        print(f"❌ Error en la ruta chat: {e}")
+        return jsonify({'respuesta': f'Error interno: {str(e)}'})
 
 @app.route('/')
 def home():
     return jsonify({
         'status': 'Earby API Funcionando perfectamente',
-        'preguntas_cargadas_json': len(entrenamiento)
+        'base_datos_json': len(entrenamiento)
     })
 
 if __name__ == '__main__':
