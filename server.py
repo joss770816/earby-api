@@ -100,15 +100,25 @@ def buscar_respuesta(mensaje):
     return respuestas_predefinidas["menu"]
 
 # ========== RUTAS DE LA API (DOBLE PROTECCIÓN) ==========
+# ========== RUTAS DE LA API (DOBLE PROTECCIÓN Y FUERZA DE JSON) ==========
 @app.route('/api/chat', methods=['POST', 'OPTIONS'])
 @app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
+    # Si es una petición de control CORS (OPTIONS), respondemos rápido 200 OK
+    if request.method == 'OPTIONS':
+        return jsonify({'status': 'CORS OK'}), 200
+
     try:
-        data = request.json or {}
+        # Usamos force=True y silent=True para que Flask extraiga el JSON 
+        # sin importar si el Content-Type viene vacío desde Hostinger
+        data = request.get_json(force=True, silent=True) or {}
+        
         mensaje = data.get('mensaje', '')
         respuesta = buscar_respuesta(mensaje)
+        
         print(f"📝 Consulta: {mensaje[:30]} -> Respuesta: {respuesta[:30]}...")
         return jsonify({'respuesta': respuesta})
+        
     except Exception as e:
         print(f"❌ Error en la ruta chat: {e}")
         return jsonify({'respuesta': f'Error interno: {str(e)}'})
