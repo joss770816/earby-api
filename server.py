@@ -7,7 +7,7 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# ========== CARGAR EL JSON ==========
+# ========== CARGAR EL JSON (SÚPER DIRECTO Y LIGERO) ==========
 json_path = os.path.join(os.path.dirname(__file__), 'entrenamiento.json')
 print(f"📂 Buscando archivo en: {json_path}")
 
@@ -19,94 +19,86 @@ except Exception as e:
     print(f"❌ Error al cargar JSON: {e}")
     entrenamiento = []
 
+# ========== RESPUESTAS HARDCODEADAS EN MEMORIA POR SEGURIDAD ==========
+respuestas_predefinidas = {
+    "saludo": "🏨 ¡Hola! Soy Earby, tu asistente del Hotel Rosvel. ¿En qué puedo ayudarte? Pregúntame por precios, tipos de habitación (sencilla/doble/triple/familiar) o disponibilidad.",
+    "1": "🏠 Habitación Sencilla: $680 MXN por noche para 1 persona. Incluye A/C, Wi-Fi, baño privado y TV. ¿Necesitas reservar?",
+    "2": "❤️ Habitación Doble: $850 MXN por noche para 2 personas. Cama matrimonial, A/C, Wi-Fi y estacionamiento. ¿Te ayudo a reservar?",
+    "3": "👨‍👩‍👧 Habitación Triple: $980 MXN por noche para 3 personas. 1 cama matrimonial + 1 individual, A/C, Wi-Fi.",
+    "4": "👨‍👩‍👧‍👦 Habitación Familiar: $1,200 MXN por noche para 4 personas. 2 camas matrimoniales, 28m², A/C, Wi-Fi."
+}
+
 # ========== NORMALIZACIÓN REFORZADA ==========
 def normalizar_texto(texto):
     """Elimina tildes, signos, y normaliza para comparación limpia"""
     if not texto:
         return ""
     texto = texto.lower().strip()
-    # Reemplazar tildes recurrentes
     texto = re.sub(r'[áàäâ]', 'a', texto)
     texto = re.sub(r'[éèëê]', 'e', texto)
     texto = re.sub(r'[íìïî]', 'i', texto)
     texto = re.sub(r'[óòöô]', 'o', texto)
     texto = re.sub(r'[úùüû]', 'u', texto)
     texto = re.sub(r'ñ', 'n', texto)
-    # Quitar signos de puntuación e interrogación
     texto = re.sub(r'[^a-z0-9\s]', '', texto)
     return texto
 
-# ========== FUNCIÓN DE BÚSQUEDA POR CONTENIDO ==========
+# ========== FUNCIÓN DE BÚSQUEDA POR PALABRAS CLAVE ==========
 def buscar_respuesta(mensaje):
     mensaje_normalizado = normalizar_texto(mensaje)
     palabras_usuario = mensaje_normalizado.split()
     
     if not palabras_usuario:
-        return "🤔 No enviaste ningún mensaje, tío."
+        return respuestas_predefinidas["saludo"]
 
-    # ===== 1. MÁXIMA PRIORIDAD: RECORRER EL JSON DE ENTRENAMIENTO =====
+    # ===== 1. MÁXIMA PRIORIDAD: ESCANEAR EL JSON SIN .GET() COMPLEJOS =====
     if entrenamiento:
         for ejemplo in entrenamiento:
-            # Normalizamos las palabras clave del bloque del JSON
-            keywords_json = normalizar_texto(ejemplo.get('input', '')).split()
+            # Separamos en palabras clave el "input" del JSON
+            keywords_json = set(normalizar_texto(ejemplo.get('input', '')).split())
             
-            # Verificamos si alguna palabra del usuario hace match exacto con las keywords
+            # Si el usuario escribe una palabra exacta del JSON de más de 2 letras, disparamos
             for palabra in palabras_usuario:
-                if palabra in keywords_json and len(palabra) >= 2: # Evita falsos positivos con letras de 1 carácter
-                    respuestas = ejemplo.get('output', {}).get('respuestas_sugeridas', [])
-                    
-                    # Detectar el tono solicitado
-                    if re.search(r'urgen|prisa|ahora|ya', mensaje_normalizado):
-                        tono = 'urgente'
-                    elif re.search(r'comprar|reservar|costo|precio|pagar', mensaje_normalizado):
-                        tono = 'formal'
-                    else:
-                        tono = 'amigable'
-                    
-                    # Buscar la respuesta que coincida con el tono
-                    for r in respuestas:
-                        if r.get('tono') == tono:
-                            return r.get('texto')
-                    
-                    # Respaldo: si no hay match de tono, regresa la primera disponible
-                    if respuestas:
-                        return respuestas[0].get('texto')
+                if palabra in keywords_json and len(palabra) >= 2:
+                    # Retornamos el string directo que guardamos con el script limpiador
+                    return ejemplo.get('output', respuestas_predefinidas["saludo"])
 
-    # ===== 2. SEGUNDA PRIORIDAD: SALUDOS HARDCODEADOS =====
+    # ===== 2. SEGUNDA PRIORIDAD: SALUDOS EXACTOS =====
     if mensaje_normalizado in ['hola', 'buenas', 'hola earby', 'hey', 'saludos', 'buen dia', 'buenas tardes', 'buenas noches']:
-        return "🏨 ¡Hola! Soy Earby, tu asistente del Hotel Rosvel. ¿En qué puedo ayudarte? Pregúntame por precios, tipos de habitación (sencilla/doble/triple/familiar) o disponibilidad."
+        return respuestas_predefinidas["saludo"]
     
-    # Números sueltos del menú
+    # Números del menú de marcación rápida
     if mensaje_normalizado == "1":
-        return "🏠 Habitación Sencilla: $680 MXN por noche para 1 persona. Incluye A/C, Wi-Fi, baño privado y TV. ¿Necesitas reservar?"
+        return respuestas_predefinidas["1"]
     if mensaje_normalizado == "2":
-        return "❤️ Habitación Doble: $850 MXN por noche para 2 personas. Cama matrimonial, A/C, Wi-Fi y estacionamiento. ¿Te ayudo a reservar?"
+        return respuestas_predefinidas["2"]
     if mensaje_normalizado == "3":
-        return "👨‍wohn Habitación Triple: $980 MXN por noche para 3 personas. 1 cama matrimonial + 1 individual, A/C, Wi-Fi."
+        return respuestas_predefinidas["3"]
     if mensaje_normalizado == "4":
-        return "👨‍👩‍👧‍👦 Habitación Familiar: $1,200 MXN por noche para 4 personas. 2 camas matrimoniales, 28m², A/C, Wi-Fi."
+        return respuestas_predefinidas["4"]
     
     # ===== 3. RESPUESTA POR DEFECTO (FALLBACK) =====
-    return "🤔 No entendí tu consulta. Puedo ayudarte con:\n• Precios: escribe 1, 2, 3, 4\n• Servicios: wifi, aire acondicionado, factura, estacionamiento\n• Ubicación: Tren Maya\n\n¿De qué te gustaría recibir información?"
+    return respuestas_predefinidas["saludo"]
 
-# ========== RUTAS DE LA API ==========
-@app.route('/api/chat', methods=['POST'])
+# ========== RUTAS DE LA API (DOBLE PROTECCIÓN) ==========
+@app.route('/api/chat', methods=['POST', 'OPTIONS'])
+@app.route('/chat', methods=['POST', 'OPTIONS'])
 def chat():
     try:
         data = request.json or {}
         mensaje = data.get('mensaje', '')
         respuesta = buscar_respuesta(mensaje)
-        print(f"📝 Consulta: {mensaje} -> Respuesta: {respuesta[:30]}...")
+        print(f"📝 Consulta: {mensaje[:30]} -> Respuesta: {respuesta[:30]}...")
         return jsonify({'respuesta': respuesta})
     except Exception as e:
-        print(f"❌ Error en la ruta /api/chat: {e}")
-        return jsonify({'respuesta': f'Error interno: {str(e)}'})
+        print(f"❌ Error crítico en ruta chat: {e}")
+        return jsonify({'respuesta': f'Error interno en el servidor: {str(e)}'})
 
 @app.route('/')
 def home():
     return jsonify({
         'status': 'Earby API Funcionando perfectamente',
-        'base_datos_json': len(entrenamiento)
+        'preguntas_cargadas_json': len(entrenamiento)
     })
 
 if __name__ == '__main__':
