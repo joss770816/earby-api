@@ -1,13 +1,6 @@
 [
   {
-    "input": "Hola, ¿cuánto cuesta la habitación sencilla para una persona?",
-    "output": "¡Claro! La sencilla está en $680 la noche, ¡súper cómoda y con aire acondicionado! 😊"
-  },
-  {
-    "input": "¿A cuánto está la habitación doble? Vamos mi esposa y yo",
-    "output": "¡Perfecta para parejas! La doble está en $850 la noche, con aire y parking gratis. ¡Los esperamos! ❤️"
-  },
-  {
+    
     "input": "Quiero cancelar mi reserva",
     "output": "¡Con todo gusto! con 24hrs de antelacion, es totalmente GRATIS. 🌿"
   },
@@ -64,22 +57,6 @@
     "output": "¡La triple está en $980 la noche! Con 1 Cama Matrimonial + 1 Cama Individual, Aire Acondicionado, Baño Privado, Pantalla Plana, WIFI, Agua Caliente 🏨"
   },
   {
-    "input": "Necesito precio de sencilla",
-    "output": "¡La sencilla está en $680 la noche! 🏨"
-  },
-  {
-    "input": "Tarifa de triple por noche",
-    "output": "¡La triple está en $980 la noche! Con Impuestos Incluidos 🏨"
-  },
-  {
-    "input": "Precio de habitación sencilla",
-    "output": "¡La sencilla está en $680 la noche! 🏨"
-  },
-  {
-    "input": "Costo de doble",
-    "output": "¡La doble está en $850 la noche! Con Impuestos Incluidos 🏨"
-  },
-  {
     "input": "Precio de habitación familiar",
     "output": "¡La familiar está en $1,200 la noche! Con Impuestos incluidos.🏨"
   },
@@ -88,38 +65,18 @@
     "output": "¡La doble está en $850 la noche! Con Impuestos Incluidos 🏨"
   },
   {
-    "input": "¿Cuánto cuesta la familiar?",
-    "output": "¡La familiar está en $1,200 la noche! Con Impuestos Incluidos. 🏨"
-  },
-  {
-    "input": "Costo de familiar",
-    "output": "¡La familiar está en $1,200 la noche! Con Impuestos Incluidos. 🏨"
-  },
-  {
     "input": "¿doble para 2?",
     "output": "¡La doble está en $850 la noche!Con Impuestos Incluidos 🏨"
   },
   {
     "input": "¿sencilla para 3?",
-    "output": "¡La sencilla está en $680 la noche! 🏨"
+    "output": "¡La sencilla para 3 persona está en $980 la noche! COn Impuestos Incluidos  🏨"
   },
   {
     "input": "¿sencilla disponible?",
     "output": "¡La sencilla está en $680 la noche! 🏨"
   },
-  {
-    "input": "Tarifa de familiar por noche",
-    "output": "¡La familiar está en $1,200 la noche! Con Impuestos Incluidos. 🏨"
-  },
-  {
-    "input": "¿Cuánto cuesta la triple?",
-    "output": "¡La triple está en $980 la noche! Con Impuestos Incluidos 🏨"
-  },
-  {
-    "input": "Costo de triple",
-    "output": "¡La triple está en $980 la noche! Con Impuestos Incluidos 🏨"
-  },
-  {
+  { 
     "input": "¿triple disponible?",
     "output": "¡Sip! Genere su busqueda en el motor de reservas, ahora mismo, antes de que se agoten. 🏨"
   },
@@ -136,16 +93,8 @@
     "output": "¡La sencilla está en $680 la noche! 🏨"
   },
   {
-    "input": "Precio de habitación doble",
-    "output": "¡La doble está en $850 la noche. 1 Cama Matrnimonial para 2 Personas, Si requiere camas separadas, favor de reservar Triple! 🏨"
-  },
-  {
     "input": "¿En cuánto está la doble?",
     "output": "¡La doble está en $850 la noche. 1 Cama Matrnimonial para 2 Personas, Si requiere camas separadas favor de reservar Triple! 🏨"
-  },
-  {
-    "input": "Tarifa de sencilla por noche",
-    "output": "¡La sencilla está en $680 la noche! 🏨"
   },
   {
     "input": "¿Puedo cancelar mi reserva de sencilla?",
@@ -168,48 +117,20 @@
     "output": "¡Con todo gusto! con 24hrs de antelacion, es totalmente GRATIS. 🌿"
   },
   {
-    "input": "Precio de la familiar para 2 personas",
-    "output": "El precio de la familiar es de $1,200, pero para 2 personas esta en $980 MXN por noche. Con 2 camas matrimoniales, 28m². 😊"
-  },
-  {
-    "input": "¿Cuánto cuesta la habitación familiar?",
-    "output": "¡Claro! La familiar está en $1,200 MXN por noche. Con 2 camas matrimoniales hasta para 4 personas, 28m². 😊"
-  },
-  {
-    "input": "Precio de la doble para 3 personas",
-    "output": "¡Claro! La tenemos como Triple en $850 MXN por noche. 1 Cama matrimonial + 1 Individual, A/C, estacionamiento gratis. 😊"
-  },
-  {
     "input": "¿Hay disponibilidad en doble para la próxima semana?",
     "output": "¡Claro! Solo genere su busqueda en el motor de reservas ahora mismo, antes de que se agoten. 😊"
   },
-  {
-    "input": "¿Cuánto cuesta la habitación doble?",
-    "output": "¡Claro! La doble está en $850 MXN por noche. Con 1 Cama matrimonial para 2 Personas, A/C, Si la requiere en Camas separadas reserve la Triple. 😊"
-  },
-  {
+  { 
     "input": "¿Puedo cancelar mi reserva de doble?",
     "output": "¡Con todo gusto! con 24hrs de antelacion, es totalmente GRATIS. 🌿"
   },
-  {
-    "input": "Precio de la triple para 2 personas",
-    "output": "¡Claro! La triple está en $980 MXN por noche. 1 cama matrimonial + 1 individual. 😊"
-  },
-  {
-    "input": "Precio de la doble para toda la familia",
-    "output": "¡Claro! La doble está en $850 MXN por noche. Con 1 Cama matrimonial, para maximo 2 Personas. 😊"
-  },
-  {
+  { 
     "input": "¿Puedo cancelar mi reserva de familiar?",
     "output": "¡Con todo gusto! con 24hrs de antelacion, es totalmente GRATIS. 🌿"
   },
   {
     "input": "¿Hay disponibilidad en sencilla para en diciembre?",
     "output": "¡Claro! La sencilla está en $680 MXN por noche. Incluye A/C, Wi-Fi, baño privado. 😊"
-  },
-  {
-    "input": "¿Cuánto cuesta la habitación triple?",
-    "output": "¡Claro! La triple está en $980 MXN por noche. 1 cama matrimonial + 1 individual. 😊"
   },
   {
     "input": "¿Hay disponibilidad en doble para en diciembre?",
@@ -231,11 +152,7 @@
     "input": "¿Hay disponibilidad en triple para mañana?",
     "output": "¡Claro! Le recomendamos genere su busqueda ahora mismo en el motor de reservas, antes de que agoten 😊"
   },
-  {
-    "input": "Precio de la familiar para toda la familia",
-    "output": "¡Claro! La familiar está en $1,200 MXN por noche. Con 2 camas matrimoniales, hasta para 4 personas, 28m². 😊"
-  },
-  {
+  { 
     "input": "¿Hay disponibilidad en sencilla para este fin de semana?",
     "output": "¡Claro! La sencilla está en $680 MXN por noche. Incluye A/C, Wi-Fi, baño privado. 😊"
   },
@@ -259,11 +176,7 @@
     "input": "¿La doble tiene tv?",
     "output": "¡Claro! Tiene Pantalla Plana con Canales por Cable, Baño Privado, WIFI, Agua Caliente. 😊"
   },
-  {
-    "input": "¿Cuánto cuesta la habitación sencilla?",
-    "output": "¡Claro! La sencilla está en $680 MXN por noche. Incluye A/C, Wi-Fi, baño privado. 😊"
-  },
-  {
+  { 
     "input": "¿La familiar tiene wifi?",
     "output": "¡Claro! Tiene Wifi, Aire acndicionado, Baño Privado, Pantalla Plana con canales, Agua Caliente. 😊"
   },
@@ -271,11 +184,7 @@
     "input": "¿Puedo cancelar mi reserva de sencilla?",
     "output": "¡Con todo gusto! con 24hrs de antelacion, es totalmente GRATIS. 🌿"
   },
-  {
-    "input": "Precio de la sencilla para 4 personas",
-    "output": "¡Claro! La sencilla está en $680 MXN por noche. Incluye A/C, Wi-Fi, baño privado. 😊"
-  },
-  {
+  { 
     "input": "¿La familiar tiene baño privado?",
     "output": "¡Sip! La familiar tiene baño privado y está en $1,200 MXN por noche. con 2 camas matrimoniales, 28m². 😊"
   },
@@ -318,10 +227,6 @@
   {
     "input": "¿Hay disponibilidad en familiar para mañana?",
     "output": "¡Sip! pero le recomendamos genere la busqueda en el motor de reservas ahora mismo, antes de que se agoten. 😊"
-  },
-  {
-    "input": "Precio de la sencilla para toda la familia",
-    "output": "¡Claro! La sencilla está en $680 MXN por noche. Incluye A/C, Wi-Fi, baño privado. 😊"
   },
   {
     "input": "¿La triple tiene estacionamiento?",
@@ -524,32 +429,16 @@
     "output": "¡Sip! Solo genera la busqueda en el motor de reservas ahora mismo, antes de que se agoten  🏨"
   },
   {
-    "input": "¿Cuánto cuesta la familiar?",
-    "output": "¡La familiar está en $1200 la noche! Con Impuestos Incluidos 🏨"
-  },
-  {
     "input": "¿Hay triple disponible?",
     "output": "¡Por Supueto! Genere su busqueda en el motor de reservas, ahora mismo, antes de que se agoten. 🏨"
   },
-  {
-    "input": "Precio de sencilla para este fin de semana",
-    "output": "¡La sencilla está en $680 la noche! ¿Te ayudo a reservar? 🏨"
-  },
-  {
-    "input": "¿Cuánto cuesta la triple?",
-    "output": "¡La triple está en $980 la noche! Con Impuestos Incluidos 🏨"
-  },
-  {
+  {  
     "input": "¿Hay sencilla disponible?",
     "output": "¡La sencilla está en $680 la noche! ¿Te ayudo a reservar? 🏨"
   },
   {
     "input": "¿Hay familiar disponible?",
     "output": "¡Sip! Genere la busqueda en el motor de reservas ahora mismo, antes de que se agoten 🏨"
-  },
-  {
-    "input": "¿Cuánto cuesta la sencilla?",
-    "output": "¡La sencilla está en $680 la noche! ¿Te ayudo a reservar? 🏨"
   },
   {
     "input": "¿Hay clima?",
@@ -685,10 +574,6 @@
   },
   {
     "input": "7 personas podemos ir?",
-    "output": "¡Claro! Con todo gusto. ¡Déjenos sus datos y con todo gusto nos ponemos en contacto! 📞 ¡Qué tal!!"
-  },
-  {
-    "input": "8 personas, ¿qué precio?",
     "output": "¡Claro! Con todo gusto. ¡Déjenos sus datos y con todo gusto nos ponemos en contacto! 📞 ¡Qué tal!!"
   },
   {
@@ -957,19 +842,7 @@
   },
   {
     "input": "Información para 3",
-    "output": "¡La triple está en $980 la noche! Con 1 Cama Matrimonial + 1 Cama Individual, Aire Acondicionado, Baño Privado, Pantalla Plana, WIFI, Agua Caliente 🏨"
-  },
-  {
-    "input": "Precio para 3",
-    "output": "¡La triple está en $980 la noche! Con 1 Cama Matrimonial + 1 Cama Individual, Aire Acondicionado, Baño Privado, Pantalla Plana, WIFI, Agua Caliente 🏨"
-  },
-  {
-    "input": "Costo para 3",
-    "output": "¡La triple está en $980 la noche! Con 1 Cama Matrimonial + 1 Cama Individual, Aire Acondicionado, Baño Privado, Pantalla Plana, WIFI, Agua Caliente 🏨"
-  },
-  {
-    "input": "Tarifa para 3",
-    "output": "¡La triple está en $980 la noche! Con 1 Cama Matrimonial + 1 Cama Individual, Aire Acondicionado, Baño Privado, Pantalla Plana, WIFI, Agua Caliente 🏨"
-  }
-]
+    "output": "¡La triple está en $980 la noche! Con 1 Cama Matrimonial + 1 Cama Individual, Aire Acondicionado, Baño Privado, Pantalla Plana, WIFI, Agua Caliente 🏨"  
+   }
+ ]
 
