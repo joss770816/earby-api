@@ -45,12 +45,21 @@ def normalizar_texto(texto):
     texto = re.sub(r'[^a-z0-9\s]', '', texto)
     return texto
 
-# ========== FUNCIÓN DE BÚSQUEDA INTELIGENTE CON SCORING ==========
+# ========== FUNCIÓN DE BÚSQUEDA INTELIGENTE CON SCORING Y LIMPIEZA ==========
 def buscar_respuesta(mensaje):
-    mensaje_normalizado = normalizar_texto(mensaje)
+    # 1. LIMPIEZA CRÍTICA: Macheteamos las etiquetas automáticas que mete el frontend de Hostinger
+    mensaje_limpio = mensaje.replace("[Buscar Disponibilidad]", "")
+    mensaje_limpio = mensaje_limpio.replace("[buscar disponibilidad]", "")
+    
+    # 2. Normalizamos el texto ya limpio de intrusos
+    mensaje_normalizado = normalizar_texto(mensaje_limpio)
     palabras_usuario = [p for p in mensaje_normalizado.split() if p not in PALABRAS_BASURA]
     
-    # Si el usuario solo envía un número suelto (Menú rápido de marcación)
+    # 3. COMPROBACIÓN DE SALUDOS REALES (Ahora sí va a entrar limpiecito)
+    if mensaje_normalizado in ['hola', 'buenas', 'hola earby', 'hey', 'saludos', 'buen dia', 'buenas tardes', 'buenas noches'] or not palabras_usuario:
+        return respuestas_predefinidas["saludo"]
+        
+    # 4. Si el usuario solo envía un número suelto (Menú rápido de marcación)
     if mensaje_normalizado == "1" or (len(palabras_usuario) == 1 and palabras_usuario[0] == "1"):
         return "🏠 Habitación Sencilla: $680 MXN por noche para 1 persona. Incluye A/C, Wi-Fi, baño privado y TV. ¿Necesitas reservar?"
     if mensaje_normalizado == "2" or (len(palabras_usuario) == 1 and palabras_usuario[0] == "2"):
@@ -59,14 +68,6 @@ def buscar_respuesta(mensaje):
         return "👨‍👩‍👧 Habitación Triple: $980 MXN por noche para 3 personas. 1 cama matrimonial + 1 individual, A/C, Wi-Fi. ¿Te interesa?"
     if mensaje_normalizado == "4" or (len(palabras_usuario) == 1 and palabras_usuario[0] == "4"):
         return "👨‍👩‍👧‍👦 Habitación Familiar: $1,200 MXN por noche para 4 personas. 2 camas matrimoniales, A/C, Wi-Fi."
-
-    # Si está vacío, le mandamos el saludo cordial
-    if not palabras_usuario:
-        return respuestas_predefinidas["saludo"]
-
-    # Saludos directos rápidos
-    if mensaje_normalizado in ['hola', 'buenas', 'hola earby', 'hey', 'saludos', 'buen dia', 'buenas tardes', 'buenas noches']:
-        return respuestas_predefinidas["saludo"]
 
     mejor_respuesta = None
     max_coincidencias = 0
@@ -82,24 +83,23 @@ def buscar_respuesta(mensaje):
             for palabra in palabras_usuario:
                 if palabra in keywords_json and len(palabra) >= 2:
                     coincidencias += 1
-                    # Súper bonus: Si el cliente busca una categoría específica (ej. "doble", "triple", "familiar", "toallas") 
-                    # y este renglón contiene exactamente esa palabra clave, le subimos la puntuación para evitar desvíos.
-                    if palabra in ['sencilla', 'doble', 'triple', 'familiar', 'toallas', 'cafe', 'estacionamiento', 'alberca', 'factura']:
-                        coincidencias += 2
+                    # Súper bonus para evitar desvíos raros
+                    if palabra in ['sencilla', 'doble', 'triple', 'familiar', 'toallas', 'cafe', 'estacionamiento', 'alberca', 'factura', 'clima', 'aire']:
+                        coincidencias += 3
 
             # Si este ejemplo supera al anterior campeón de puntos, se vuelve la mejor respuesta
             if coincidencias > max_coincidencias:
                 max_coincidencias = coincidencias
                 mejor_respuesta = ejemplo.get('output')
 
-    # Si encontramos una respuesta con buena puntuación (al menos 1 match real de palabra importante)
-    if max_coincidencias > 0 and mejor_respuesta:
+    # Si encontramos una respuesta con buena puntuación (mínimo 1 match real legítimo)
+    # Esto salva al bot de responder cosas de habitaciones cuando escriben "perro" o "gato"
+    if max_coincidencias >= 1 and mejor_respuesta:
         return mejor_respuesta
 
-    # ===== 3. RESPUESTA POR DEFECTO (FALLBACK) =====
+    # ===== 5. RESPUESTA POR DEFECTO (FALLBACK) SI NO TIENE SENTIDO =====
     return respuestas_predefinidas["menu"]
 
-# ========== RUTAS DE LA API (DOBLE PROTECCIÓN) ==========
 # ========== RUTAS DE LA API (DOBLE PROTECCIÓN Y FUERZA DE JSON) ==========
 @app.route('/api/chat', methods=['POST', 'OPTIONS'])
 @app.route('/chat', methods=['POST', 'OPTIONS'])
@@ -109,8 +109,7 @@ def chat():
         return jsonify({'status': 'CORS OK'}), 200
 
     try:
-        # Usamos force=True y silent=True para que Flask extraiga el JSON 
-        # sin importar si el Content-Type viene vacío desde Hostinger
+        # Usamos force=True y silent=True para saltar los errores 415 de Hostinger
         data = request.get_json(force=True, silent=True) or {}
         
         mensaje = data.get('mensaje', '')
